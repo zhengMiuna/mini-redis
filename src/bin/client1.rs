@@ -5,15 +5,6 @@ use volo_gen::mini_redis::GetItemRequest;
 
 
 lazy_static! {
-    static ref CLIENT: volo_gen::mini_redis::ItemServiceClient = {
-        let addr: SocketAddr = "127.0.0.1:8080".parse().unwrap();
-        volo_gen::mini_redis::ItemServiceClientBuilder::new("mini-redis")
-            .address(addr)
-            .build()
-    };
-}
-
-lazy_static! {
     static ref CLIENT1: volo_gen::mini_redis::ItemServiceClient = {
         let addr: SocketAddr = "127.0.0.1:8081".parse().unwrap();
         volo_gen::mini_redis::ItemServiceClientBuilder::new("mini-redis")
@@ -21,7 +12,6 @@ lazy_static! {
             .build()
     };
 }
-
 
 #[volo::main]
 async fn main() {
@@ -31,20 +21,10 @@ async fn main() {
     let operation = args.remove(1).clone().to_lowercase().to_string();
     if operation == "set".to_string() {
         req = GetItemRequest {
-            op: "set".into(),
+            op: "deny".into(),
             key: args.remove(1).clone().into(),
             value: args.remove(1).clone().into(),
         };
-        let req1 = GetItemRequest {
-            op: "set".into(),
-            key: req.key.clone(),
-            value: req.value.clone(),
-        };
-        let resp =CLIENT1.get_item(req1).await;
-        match resp {
-            Ok(ok) =>{}
-            Err(e) =>{tracing::error!("{:?}",e);}
-        }
     }else if operation == "get".to_string() {
         req = GetItemRequest {
             op: "get".into(),
@@ -66,7 +46,7 @@ async fn main() {
     }else {
         println!("Invalid command");
     }
-    let resp = CLIENT.get_item(req).await;
+    let resp = CLIENT1.get_item(req).await;
     match resp {
         Ok(info) => {
             println!("{} finished",info.op);

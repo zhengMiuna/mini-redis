@@ -24,6 +24,7 @@ impl volo_gen::mini_redis::ItemService for S {
 		let _get = FastStr::from("get");
 		let _del = FastStr::from("del");
 		let _ping = FastStr::from("ping");
+		let _deny = FastStr::from("deny");
 
 		if _req.op == _set {
 			response.op = _set;
@@ -63,6 +64,8 @@ impl volo_gen::mini_redis::ItemService for S {
 			 println!("ping: {}",v);
 			 println!("Pong!");
 			 response.status = true;
+		}else if _req.op == _deny {
+			panic!("set denied!");
 		}else {
 			panic!("invalid command");
 		}
